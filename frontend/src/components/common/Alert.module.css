@@ -1,0 +1,19 @@
+.alert {
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+  border: 1px solid transparent;
+}
+
+.error {
+  background-color: #2a1215;
+  color: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+.info {
+  background-color: #111a2c;
+  color: #1890ff;
+  border-color: #1890ff;
+}

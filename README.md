@@ -1,92 +1,108 @@
-# EquiLens
+# ⚖️ EquiLens
 
-EquiLens is an AI Bias Detection platform. It allows users to test the fairness of AI-generated decisions by automatically swapping sensitive attributes (like names or genders) in prompts and analyzing if the AI changes its decision.
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://equi-lens-rosy.vercel.app/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/Frontend-React-61DAFB?logo=react&logoColor=black)](https://reactjs.org/)
+[![Gemini 2.5 Flash](https://img.shields.io/badge/AI-Gemini%202.5%20Flash-blue?logo=google-gemini&logoColor=white)](https://ai.google.dev/)
 
-## Features
-
-- **Automated Bias Testing**: Submits a prompt, generates a controlled variation, and compares the AI's decisions.
-- **Fairness Scoring**: Calculates a percentage-based fairness score.
-- **Explainability**: Explains why a prompt was flagged as biased and provides an unbiased alternative.
-- **History Tracking**: Persists all historical analysis runs in a database.
-- **Clean Architecture**: Backend is built using Uncle Bob's Clean Architecture for high modularity.
-
-## Tech Stack
-
-- **Backend**: FastAPI, SQLAlchemy (SQLite/PostgreSQL), Google Gemini API, CacheTools
-- **Frontend**: React (Vite), Axios, Modular CSS
-- **Architecture**: Clean Architecture (Domain, Use Cases, Infrastructure)
+**EquiLens** is a production-ready AI Bias Detection and Mitigation platform. It audits AI decision-making by performing automated "Stress Tests" on prompts, identifying hidden biases based on sensitive attributes (gender, ethnicity, etc.), and providing unbiased alternatives.
 
 ---
 
-## Local Setup
+## 🚀 How It Works
 
-### 1. Backend
+EquiLens uses a **Double-Blind Variation** technique to uncover bias:
 
-Navigate to the backend directory:
-```bash
-cd backend
+```mermaid
+graph TD
+    A[User Input Prompt] --> B[Generate AI Decision]
+    B --> C[Attribute Variation Engine]
+    C --> D[Swap Sensitive Attributes eg. Rahul -> Riya]
+    D --> E[Generate Second Decision]
+    E --> F[Bias Analysis Engine]
+    F --> G{Decisions Match?}
+    G -- Yes --> H[High Fairness Score]
+    G -- No --> I[Bias Detected & Explained]
 ```
 
-Create a virtual environment and install dependencies:
+1. **Original Decision**: We ask a Gemini model for its decision (e.g., "Hire Candidate A").
+2. **Symmetrical Swap**: We automatically detect and swap sensitive names/attributes (e.g., swapping a male name for a female name).
+3. **Contrast Analysis**: We compare the two results. If the AI changes its core decision solely because of the attribute swap, EquiLens flags it as biased.
+4. **Mitigation**: The system generates an explanation and a suggested unbiased output.
+
+---
+
+## ✨ Key Features
+
+- **🛡️ Automated Stress Testing**: Instantly detect if an AI's decision is influenced by gender or cultural markers.
+- **📊 Quantitative Fairness Scores**: Get a 0-100% score based on consistency and logical fairness.
+- **🏗️ Clean Architecture**: Engineered with strict separation of layers (Domain, Use Case, Infrastructure) for maximum maintainability.
+- **📱 Premium UI/UX**: Built with a custom, accessible component library and dark-mode first design.
+- **💾 Historical Auditing**: Every analysis is persisted in a transactional database for long-term compliance tracking.
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Framework**: FastAPI (Python 3.10+)
+- **ORM**: SQLAlchemy (SQLite/PostgreSQL compatible)
+- **AI Integration**: Google Gemini API (2.5 Flash)
+- **Architecture**: Domain-Driven Design / Clean Architecture
+- **Caching**: TTL-based performance optimization
+
+### Frontend
+- **Framework**: React 18 (Vite)
+- **Styling**: CSS Modules (Scoped styling)
+- **State Management**: React Hooks & Refs
+- **API Client**: Axios with interceptor patterns
+
+---
+
+## 💻 Local Installation
+
+### 1. Backend Setup
 ```bash
+cd backend
 python -m venv venv
 # Windows
 .\venv\Scripts\Activate
-# macOS/Linux
+# Mac/Linux
 source venv/bin/activate
 
 pip install -r requirements.txt
-```
-
-Set up your environment variables:
-Copy `.env.example` to `.env` and add your **Gemini API Key**.
-```bash
-cp .env.example .env
-```
-
-Run the FastAPI server:
-```bash
+cp .env.example .env # Add your GEMINI_API_KEY here
 uvicorn app.main:app --reload
 ```
-The backend will start at `http://localhost:8000`.
 
-### 2. Frontend
-
-Navigate to the frontend directory:
+### 2. Frontend Setup
 ```bash
 cd frontend
-```
-
-Install Node dependencies:
-```bash
 npm install
-```
-
-Run the Vite development server:
-```bash
 npm run dev
 ```
-The frontend will start at `http://localhost:5173`.
 
 ---
 
-## Deployment Guide
+## 🌐 Deployment Guide
 
 ### Backend (Render)
-1. Push the repository to GitHub.
-2. Create a new Web Service on [Render](https://render.com/).
-3. Connect your GitHub repo.
-4. Set the Root Directory to `backend`.
-5. Set Build Command: `pip install -r requirements.txt`
-6. Set Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-7. Add Environment Variables:
-   - `GEMINI_API_KEY`: Your Gemini Key
-   - `PYTHON_VERSION`: `3.10.0` (or higher)
+- **Root Directory**: `backend`
+- **Build Command**: `pip install -r requirements.txt`
+- **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- **Envs**: `GEMINI_API_KEY`, `PYTHON_VERSION=3.10.0`
 
 ### Frontend (Vercel)
-1. Go to [Vercel](https://vercel.com/) and import the GitHub repo.
-2. Set the Framework Preset to `Vite`.
-3. Set the Root Directory to `frontend`.
-4. Add Environment Variable:
-   - `VITE_API_URL`: The URL of your deployed Render backend (e.g., `https://your-backend.onrender.com/api/v1`)
-5. Click Deploy!
+- **Root Directory**: `frontend`
+- **Framework**: Vite
+- **Env**: `VITE_API_URL` (Points to your Render backend `/api/v1`)
+
+---
+
+## 📄 License
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+<p align="center">Built with ⚖️ by Aayush Kumbharkar</p>

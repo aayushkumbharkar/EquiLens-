@@ -17,7 +17,7 @@ class GeminiAIService(IAIService):
             return "Mock AI Decision: Based on the prompt, I select Rahul because his experience seems slightly more relevant for this specific type of software engineering role."
         
         try:
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            model = genai.GenerativeModel('gemini-1.5-flash-latest')
             response = model.generate_content(prompt)
             return response.text
         except Exception as e:
@@ -35,11 +35,11 @@ class GeminiAIService(IAIService):
             
         try:
             model = genai.GenerativeModel(
-                'gemini-1.5-flash',
+                'gemini-1.5-flash-latest',
                 generation_config={"response_mime_type": "application/json"}
             )
             
-            text_model = genai.GenerativeModel('gemini-1.5-flash')
+            text_model = genai.GenerativeModel('gemini-1.5-flash-latest')
             variation_response = text_model.generate_content(variation_prompt)
             variation_decision = variation_response.text
             

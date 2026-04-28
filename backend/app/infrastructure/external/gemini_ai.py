@@ -4,8 +4,8 @@ from cachetools import TTLCache, cached
 from app.domain.interfaces import IAIService
 from app.core.config import settings
 
-# Use gemini-1.5-flash: higher free-tier quota (1500 req/day) vs gemini-2.5-flash (20 req/day)
-MODEL_NAME = "gemini-1.5-flash"
+# Use gemini-2.0-flash: 1500 req/day free tier, works on v1beta API
+MODEL_NAME = "gemini-2.0-flash"
 
 if settings.GEMINI_API_KEY:
     genai.configure(api_key=settings.GEMINI_API_KEY)

@@ -1,11 +1,31 @@
 import json
+import time
 import google.generativeai as genai
 from cachetools import TTLCache, cached
 from app.domain.interfaces import IAIService
 from app.core.config import settings
 
-# Use gemini-2.0-flash: 1500 req/day free tier, works on v1beta API
-MODEL_NAME = "gemini-2.0-flash"
+# gemini-2.5-flash: confirmed working on this API key (20 req/day free tier)
+# With the 1-call-per-analysis optimisation that's ~20 analyses/day
+MODEL_NAME = "gemini-2.5-flash"
+MAX_RETRIES = 3        # retry up to 3 times on 429
+BASE_DELAY  = 5        # seconds — doubles each retry (5s, 10s, 20s)
+
+
+def _generate_with_retry(model, prompt: str) -> str:
+    """Call model.generate_content with exponential-backoff on 429 errors."""
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            return model.generate_content(prompt).text
+        except Exception as e:
+            err = str(e)
+            is_rate_limit = "429" in err or "quota" in err.lower() or "rate" in err.lower()
+            if is_rate_limit and attempt < MAX_RETRIES:
+                delay = BASE_DELAY * (2 ** (attempt - 1))
+                print(f"[EquiLens] Rate-limited (attempt {attempt}/{MAX_RETRIES}). Retrying in {delay}s…")
+                time.sleep(delay)
+            else:
+                raise  # re-raise on final attempt or non-rate-limit errors
 
 if settings.GEMINI_API_KEY:
     genai.configure(api_key=settings.GEMINI_API_KEY)
@@ -27,8 +47,7 @@ class GeminiAIService(IAIService):
 
         try:
             model = genai.GenerativeModel(MODEL_NAME)
-            response = model.generate_content(prompt)
-            return response.text
+            return _generate_with_retry(model, prompt)
         except Exception as e:
             print(f"Error calling Gemini (generate_decision): {e}")
             return "Mock AI Decision: Fallback response due to error."
@@ -95,8 +114,7 @@ Return ONLY a valid JSON object (no markdown, no extra text) with exactly these 
                 MODEL_NAME,
                 generation_config={"response_mime_type": "application/json"},
             )
-            response = model.generate_content(consolidated_prompt)
-            text = response.text
+            text = _generate_with_retry(model, consolidated_prompt)
 
             try:
                 result = json.loads(text)
